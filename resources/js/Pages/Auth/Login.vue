@@ -38,10 +38,6 @@ const submit = () => {
             {{ status }}
         </div>
 
-        <div class="flex justify-center mb-4">
-            <ApplicationLogo class="h-14 w-auto fill-current" />
-        </div>
-
         <form @submit.prevent="submit">
             <div>
                 <InputLabel for="email" value="Email" />
@@ -96,6 +92,13 @@ const submit = () => {
                     class="mt-4 rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
                     Forgot your password?
+                </Link>
+
+                <Link
+                    :href="route('register')"
+                    class="mt-2 rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                >
+                    Don't have an account? Register
                 </Link>
             </div>
         </form>

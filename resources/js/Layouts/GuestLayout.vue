@@ -10,6 +10,10 @@ import { Link } from "@inertiajs/vue3";
         <div
             class="mt-6 w-full overflow-hidden px-16 py-10 shadow-md sm:max-w-md sm:rounded-lg"
         >
+            <div class="flex justify-center mb-4">
+                <ApplicationLogo class="h-14 w-auto fill-current" />
+            </div>
+
             <slot />
         </div>
     </div>

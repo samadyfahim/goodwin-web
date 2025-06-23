@@ -1,5 +1,6 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import StatCard from "@/Components/StatCard.vue";
 import { Head, Link } from "@inertiajs/vue3";
 </script>
 

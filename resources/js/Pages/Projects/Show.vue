@@ -1,7 +1,11 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import StatusBadge from "@/Components/StatusBadge.vue";
+import StatCard from "@/Components/StatCard.vue";
+import TabNavigation from "@/Components/TabNavigation.vue";
+import EmptyState from "@/Components/EmptyState.vue";
 import { Head, Link } from "@inertiajs/vue3";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 
 const props = defineProps({
     project: Object,
@@ -9,40 +13,48 @@ const props = defineProps({
 
 const activeTab = ref("overview");
 
-const getStatusColor = (status) => {
-    const colors = {
-        planned: "bg-blue-100 text-blue-800",
-        active: "bg-green-100 text-green-800",
-        completed: "bg-purple-100 text-purple-800",
-        delayed: "bg-red-100 text-red-800",
-    };
-    return colors[status] || "bg-gray-100 text-gray-800";
-};
-
-const getStatusIcon = (status) => {
-    const icons = {
-        planned: "📋",
-        active: "⚡",
-        completed: "✅",
-        delayed: "⚠️",
-    };
-    return icons[status] || "📄";
-};
-
 const formatDate = (date) => {
     if (!date) return "No deadline";
     return new Date(date).toLocaleDateString();
 };
 
-const getTaskStatusColor = (status) => {
-    const colors = {
-        pending: "bg-yellow-100 text-yellow-800",
-        in_progress: "bg-blue-100 text-blue-800",
-        completed: "bg-green-100 text-green-800",
-        cancelled: "bg-red-100 text-red-800",
-    };
-    return colors[status] || "bg-gray-100 text-gray-800";
-};
+const tabs = computed(() => [
+    { id: "overview", label: "Overview" },
+    { id: "tasks", label: "Tasks", count: props.project.tasks?.length || 0 },
+    { id: "team", label: "Team", count: props.project.users?.length || 0 },
+    { id: "files", label: "Files", count: props.project.files?.length || 0 },
+]);
+
+const stats = computed(() => [
+    {
+        title: "Total Tasks",
+        value: props.project.tasks?.length || 0,
+        icon: "M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",
+        iconColor: "blue",
+        iconBgColor: "blue",
+    },
+    {
+        title: "Team Members",
+        value: props.project.users?.length || 0,
+        icon: "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z",
+        iconColor: "green",
+        iconBgColor: "green",
+    },
+    {
+        title: "Customers",
+        value: props.project.customers?.length || 0,
+        icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z",
+        iconColor: "purple",
+        iconBgColor: "purple",
+    },
+    {
+        title: "Deadline",
+        value: formatDate(props.project.deadline),
+        icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z",
+        iconColor: "yellow",
+        iconBgColor: "yellow",
+    },
+]);
 </script>
 
 <template>
@@ -81,19 +93,7 @@ const getTaskStatusColor = (status) => {
                     </div>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <span
-                        :class="`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
-                            project.status
-                        )}`"
-                    >
-                        <span class="mr-1">{{
-                            getStatusIcon(project.status)
-                        }}</span>
-                        {{
-                            project.status.charAt(0).toUpperCase() +
-                            project.status.slice(1)
-                        }}
-                    </span>
+                    <StatusBadge :status="project.status" type="project" />
                     <button
                         class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors duration-200"
                     >
@@ -118,50 +118,11 @@ const getTaskStatusColor = (status) => {
         <div class="py-8">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <!-- Tab Navigation -->
-                <div class="border-b border-gray-200 mb-8">
-                    <nav class="-mb-px flex space-x-8">
-                        <button
-                            @click="activeTab = 'overview'"
-                            :class="`py-2 px-1 border-b-2 font-medium text-sm ${
-                                activeTab === 'overview'
-                                    ? 'border-primary text-primary'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                            }`"
-                        >
-                            Overview
-                        </button>
-                        <button
-                            @click="activeTab = 'tasks'"
-                            :class="`py-2 px-1 border-b-2 font-medium text-sm ${
-                                activeTab === 'tasks'
-                                    ? 'border-primary text-primary'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                            }`"
-                        >
-                            Tasks ({{ project.tasks?.length || 0 }})
-                        </button>
-                        <button
-                            @click="activeTab = 'team'"
-                            :class="`py-2 px-1 border-b-2 font-medium text-sm ${
-                                activeTab === 'team'
-                                    ? 'border-primary text-primary'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                            }`"
-                        >
-                            Team ({{ project.users?.length || 0 }})
-                        </button>
-                        <button
-                            @click="activeTab = 'files'"
-                            :class="`py-2 px-1 border-b-2 font-medium text-sm ${
-                                activeTab === 'files'
-                                    ? 'border-primary text-primary'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                            }`"
-                        >
-                            Files ({{ project.files?.length || 0 }})
-                        </button>
-                    </nav>
-                </div>
+                <TabNavigation
+                    :tabs="tabs"
+                    :active-tab="activeTab"
+                    @update:active-tab="activeTab = $event"
+                />
 
                 <!-- Overview Tab -->
                 <div v-if="activeTab === 'overview'" class="space-y-6">
@@ -182,157 +143,15 @@ const getTaskStatusColor = (status) => {
 
                     <!-- Project Stats -->
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                        <div
-                            class="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
-                        >
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0">
-                                    <div
-                                        class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center"
-                                    >
-                                        <svg
-                                            class="w-5 h-5 text-blue-600"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                                            ></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="ml-4">
-                                    <p
-                                        class="text-sm font-medium text-gray-500"
-                                    >
-                                        Total Tasks
-                                    </p>
-                                    <p
-                                        class="text-2xl font-semibold text-gray-900"
-                                    >
-                                        {{ project.tasks?.length || 0 }}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div
-                            class="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
-                        >
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0">
-                                    <div
-                                        class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center"
-                                    >
-                                        <svg
-                                            class="w-5 h-5 text-green-600"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                                            ></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="ml-4">
-                                    <p
-                                        class="text-sm font-medium text-gray-500"
-                                    >
-                                        Team Members
-                                    </p>
-                                    <p
-                                        class="text-2xl font-semibold text-gray-900"
-                                    >
-                                        {{ project.users?.length || 0 }}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div
-                            class="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
-                        >
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0">
-                                    <div
-                                        class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center"
-                                    >
-                                        <svg
-                                            class="w-5 h-5 text-purple-600"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                                            ></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="ml-4">
-                                    <p
-                                        class="text-sm font-medium text-gray-500"
-                                    >
-                                        Customers
-                                    </p>
-                                    <p
-                                        class="text-2xl font-semibold text-gray-900"
-                                    >
-                                        {{ project.customers?.length || 0 }}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div
-                            class="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
-                        >
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0">
-                                    <div
-                                        class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center"
-                                    >
-                                        <svg
-                                            class="w-5 h-5 text-yellow-600"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                            ></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="ml-4">
-                                    <p
-                                        class="text-sm font-medium text-gray-500"
-                                    >
-                                        Deadline
-                                    </p>
-                                    <p
-                                        class="text-2xl font-semibold text-gray-900"
-                                    >
-                                        {{ formatDate(project.deadline) }}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                        <StatCard
+                            v-for="stat in stats"
+                            :key="stat.title"
+                            :title="stat.title"
+                            :value="stat.value"
+                            :icon="stat.icon"
+                            :icon-color="stat.iconColor"
+                            :icon-bg-color="stat.iconBgColor"
+                        />
                     </div>
 
                     <!-- Customers -->
@@ -397,21 +216,10 @@ const getTaskStatusColor = (status) => {
                                         <div
                                             class="flex items-center mt-2 space-x-4"
                                         >
-                                            <span
-                                                :class="`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getTaskStatusColor(
-                                                    task.status
-                                                )}`"
-                                            >
-                                                {{
-                                                    task.status
-                                                        .replace("_", " ")
-                                                        .charAt(0)
-                                                        .toUpperCase() +
-                                                    task.status
-                                                        .replace("_", " ")
-                                                        .slice(1)
-                                                }}
-                                            </span>
+                                            <StatusBadge
+                                                :status="task.status"
+                                                type="task"
+                                            />
                                             <span class="text-xs text-gray-500">
                                                 Created by
                                                 {{ task.creator?.name }}
@@ -427,27 +235,14 @@ const getTaskStatusColor = (status) => {
                                 </div>
                             </div>
                         </div>
-                        <div v-else class="px-6 py-12 text-center">
-                            <svg
-                                class="mx-auto h-12 w-12 text-gray-400"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                                ></path>
-                            </svg>
-                            <h3 class="mt-2 text-sm font-medium text-gray-900">
-                                No tasks
-                            </h3>
-                            <p class="mt-1 text-sm text-gray-500">
-                                Get started by creating a new task.
-                            </p>
-                        </div>
+                        <EmptyState
+                            v-else
+                            icon="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                            title="No tasks"
+                            description="Get started by creating a new task."
+                            action-text="Create Task"
+                            action-href="#"
+                        />
                     </div>
                 </div>
 
@@ -497,27 +292,14 @@ const getTaskStatusColor = (status) => {
                                 </div>
                             </div>
                         </div>
-                        <div v-else class="px-6 py-12 text-center">
-                            <svg
-                                class="mx-auto h-12 w-12 text-gray-400"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
-                                ></path>
-                            </svg>
-                            <h3 class="mt-2 text-sm font-medium text-gray-900">
-                                No team members
-                            </h3>
-                            <p class="mt-1 text-sm text-gray-500">
-                                Add team members to get started.
-                            </p>
-                        </div>
+                        <EmptyState
+                            v-else
+                            icon="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
+                            title="No team members"
+                            description="Add team members to get started."
+                            action-text="Add Member"
+                            action-href="#"
+                        />
                     </div>
                 </div>
 
@@ -578,27 +360,14 @@ const getTaskStatusColor = (status) => {
                                 </div>
                             </div>
                         </div>
-                        <div v-else class="px-6 py-12 text-center">
-                            <svg
-                                class="mx-auto h-12 w-12 text-gray-400"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                                ></path>
-                            </svg>
-                            <h3 class="mt-2 text-sm font-medium text-gray-900">
-                                No files
-                            </h3>
-                            <p class="mt-1 text-sm text-gray-500">
-                                Upload files to get started.
-                            </p>
-                        </div>
+                        <EmptyState
+                            v-else
+                            icon="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                            title="No files"
+                            description="Upload files to get started."
+                            action-text="Upload File"
+                            action-href="#"
+                        />
                     </div>
                 </div>
             </div>

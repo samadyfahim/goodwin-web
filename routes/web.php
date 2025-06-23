@@ -65,9 +65,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/projects/{project}/files/{file}/view', [\App\Http\Controllers\ProjectFileController::class, 'view'])->name('projects.files.view');
 });
 
-Route::get('/uploaded-files', function () {
-    return Inertia::render('UploadedFiles');
-})->middleware(['auth', 'verified'])->name('uploaded-files');
+Route::get('/uploaded-files', [\App\Http\Controllers\ProjectFileController::class, 'index'])->middleware(['auth', 'verified'])->name('uploaded-files');
 
 Route::get('/activity', function () {
     return Inertia::render('Activity');

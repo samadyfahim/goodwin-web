@@ -49,12 +49,6 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     Uploaded Files
                                 </NavLink>
-                                <NavLink
-                                    :href="route('activity')"
-                                    :active="route().current('activity')"
-                                >
-                                    Activity
-                                </NavLink>
                             </div>
                         </div>
 

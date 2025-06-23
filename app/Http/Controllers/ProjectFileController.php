@@ -6,6 +6,8 @@ use App\Models\Project;
 use App\Models\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
+use App\Models\User;
 
 class ProjectFileController extends Controller
 {
@@ -41,6 +43,14 @@ class ProjectFileController extends Controller
         return response()->file(Storage::path($file->filepath), [
             'Content-Type' => $mime,
             'Content-Disposition' => 'inline; filename="' . $file->filename . '"',
+        ]);
+    }
+
+    public function index()
+    {
+        $files = \App\Models\File::with(['project', 'creator'])->orderByDesc('created_at')->get();
+        return Inertia::render('UploadedFiles', [
+            'files' => $files
         ]);
     }
 } 

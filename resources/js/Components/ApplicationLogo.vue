@@ -1,3 +1,3 @@
 <template>
-    <img src="/storage/logo.png" alt="Application Logo" />
+    <img src="images/logo.png" alt="Application Logo" />
 </template>

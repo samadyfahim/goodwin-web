@@ -2,6 +2,36 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import StatCard from "@/Components/StatCard.vue";
 import { Head, Link } from "@inertiajs/vue3";
+
+const props = defineProps({
+    upcomingTasks: Array,
+    teamProjects: Array,
+});
+
+const statusColors = {
+    pending: "bg-yellow-100 text-yellow-800",
+    in_progress: "bg-blue-100 text-blue-800",
+    completed: "bg-green-100 text-green-800",
+    cancelled: "bg-red-100 text-red-800",
+};
+const statusLabels = {
+    pending: "Pending",
+    in_progress: "In Progress",
+    completed: "Completed",
+    cancelled: "Cancelled",
+};
+const projectStatusColors = {
+    planned: "bg-blue-100 text-blue-800",
+    active: "bg-green-100 text-green-800",
+    completed: "bg-purple-100 text-purple-800",
+    delayed: "bg-red-100 text-red-800",
+};
+const projectStatusLabels = {
+    planned: "Planned",
+    active: "Active",
+    completed: "Completed",
+    delayed: "Delayed",
+};
 </script>
 
 <template>
@@ -9,176 +39,227 @@ import { Head, Link } from "@inertiajs/vue3";
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                Dashboard
-            </h2>
+            <h2 class="text-2xl font-bold text-gray-900">Dashboard</h2>
         </template>
 
-        <div class="py-12">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div class="py-12 bg-gray-50 min-h-screen">
+            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-10">
                 <!-- Welcome Message -->
-                <div class="mb-8">
+                <div
+                    class="bg-gradient-to-r from-primary to-blue-400 rounded-xl shadow-lg p-8 flex flex-col md:flex-row items-center justify-between"
+                >
+                    <div>
+                        <h3 class="text-2xl font-bold text-white mb-2">
+                            Welcome to Goodwin Web!
+                        </h3>
+                        <p class="text-white/90 text-lg">
+                            Your project management dashboard. See your tasks
+                            and projects at a glance.
+                        </p>
+                    </div>
+                    <img
+                        src="/images/logo.png"
+                        alt="Logo"
+                        class="h-16 w-auto mt-6 md:mt-0 md:ml-8 drop-shadow-xl"
+                    />
+                </div>
+
+                <!-- Upcoming Tasks -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-xl font-semibold text-gray-900">
+                            My Upcoming Tasks
+                        </h4>
+                        <Link
+                            href="/projects"
+                            class="text-primary font-medium hover:underline"
+                            >View All Tasks</Link
+                        >
+                    </div>
                     <div
-                        class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-200"
+                        v-if="props.upcomingTasks.length > 0"
+                        class="divide-y divide-gray-100"
                     >
-                        <div class="p-6 text-gray-900">
-                            <h3 class="text-lg font-medium text-gray-900 mb-2">
-                                Welcome to Goodwin Web!
-                            </h3>
-                            <p class="text-gray-600">
-                                You're logged in! Use the cards above to
-                                navigate to different sections of your project
-                                management system.
-                            </p>
+                        <div
+                            v-for="task in props.upcomingTasks"
+                            :key="task.id"
+                            class="py-4 flex flex-col md:flex-row md:items-center md:justify-between group hover:bg-primary/5 rounded-lg transition"
+                        >
+                            <div class="flex-1 p-4 min-w-0">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <span
+                                        class="font-semibold text-lg text-gray-800"
+                                        >{{ task.name }}</span
+                                    >
+                                    <span
+                                        :class="`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                                            statusColors[task.status]
+                                        }`"
+                                    >
+                                        {{
+                                            statusLabels[task.status] ||
+                                            task.status
+                                        }}
+                                    </span>
+                                </div>
+                                <div
+                                    class="text-gray-500 text-sm mb-1 line-clamp-2"
+                                >
+                                    {{ task.description }}
+                                </div>
+                                <div
+                                    class="flex items-center space-x-4 text-xs text-gray-400 mt-1"
+                                >
+                                    <span v-if="task.project">
+                                        <Link
+                                            :href="`/projects/${task.project.id}`"
+                                            class="hover:underline text-primary font-medium"
+                                        >
+                                            {{ task.project.name }}
+                                        </Link>
+                                    </span>
+                                    <span v-if="task.deadline">
+                                        <svg
+                                            class="inline w-4 h-4 mr-1"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                            />
+                                        </svg>
+                                        Deadline:
+                                        {{
+                                            new Date(
+                                                task.deadline
+                                            ).toLocaleDateString()
+                                        }}
+                                    </span>
+                                    <span>
+                                        Created:
+                                        {{
+                                            new Date(
+                                                task.created_at
+                                            ).toLocaleDateString()
+                                        }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div
+                                class="mt-2 md:mt-0 md:ml-4 mr-4 flex-shrink-0"
+                            >
+                                <Link
+                                    :href="`/projects/${task.project?.id}`"
+                                    class="inline-flex items-center px-3 py-1.5 bg-primary text-white rounded-md text-xs font-semibold shadow hover:bg-primaryHover transition"
+                                >
+                                    View Project
+                                </Link>
+                            </div>
                         </div>
+                    </div>
+                    <div v-else class="text-gray-400 text-center py-8">
+                        No upcoming tasks assigned to you.
                     </div>
                 </div>
 
-                <div
-                    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                >
-                    <!-- Projects Card -->
+                <!-- Projects as Team Member -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-xl font-semibold text-gray-900">
+                            Projects I'm a Team Member
+                        </h4>
+                        <Link
+                            href="/projects"
+                            class="text-primary font-medium hover:underline"
+                            >View All Projects</Link
+                        >
+                    </div>
                     <div
-                        class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-200"
+                        v-if="props.teamProjects.length > 0"
+                        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                     >
-                        <div class="p-6">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0">
-                                    <div
-                                        class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center"
-                                    >
-                                        <svg
-                                            class="w-5 h-5 text-indigo-600"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                                            ></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="ml-4">
-                                    <h3
-                                        class="text-lg font-medium text-gray-900"
-                                    >
-                                        My Projects
-                                    </h3>
-                                    <p class="text-sm text-gray-500">
-                                        Manage your projects
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="mt-4">
-                                <Link
-                                    href="/projects"
-                                    class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
+                        <div
+                            v-for="project in props.teamProjects"
+                            :key="project.id"
+                            class="bg-gradient-to-br from-primary/10 to-blue-100 rounded-lg p-5 shadow group hover:shadow-lg transition flex flex-col"
+                        >
+                            <div class="flex items-center mb-2">
+                                <span
+                                    :class="`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                                        projectStatusColors[project.status]
+                                    }`"
                                 >
-                                    View Projects
+                                    {{
+                                        projectStatusLabels[project.status] ||
+                                        project.status
+                                    }}
+                                </span>
+                                <span class="ml-auto text-xs text-gray-400">{{
+                                    new Date(
+                                        project.created_at
+                                    ).toLocaleDateString()
+                                }}</span>
+                            </div>
+                            <h5
+                                class="font-bold text-lg text-gray-800 mb-1 truncate"
+                            >
+                                {{ project.name }}
+                            </h5>
+                            <div
+                                class="text-gray-500 text-sm mb-2 line-clamp-2"
+                            >
+                                {{ project.description || "No description" }}
+                            </div>
+                            <div class="flex-1"></div>
+                            <div class="flex items-center justify-between mt-4">
+                                <div
+                                    class="flex items-center text-xs text-gray-500"
+                                >
+                                    <svg
+                                        class="w-4 h-4 mr-1"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                        />
+                                    </svg>
+                                    {{ project.creator?.name || "Unknown" }}
+                                </div>
+                                <Link
+                                    :href="`/projects/${project.id}`"
+                                    class="inline-flex items-center px-3 py-1.5 bg-primary text-white rounded-md text-xs font-semibold shadow hover:bg-primaryHover transition"
+                                >
+                                    View Project
                                 </Link>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Tasks Card -->
-                    <div
-                        class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-200"
-                    >
-                        <div class="p-6">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0">
-                                    <div
-                                        class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center"
-                                    >
-                                        <svg
-                                            class="w-5 h-5 text-green-600"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                                            ></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="ml-4">
-                                    <h3
-                                        class="text-lg font-medium text-gray-900"
-                                    >
-                                        My Tasks
-                                    </h3>
-                                    <p class="text-sm text-gray-500">
-                                        View and manage tasks
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="mt-4">
-                                <Link
-                                    href="#"
-                                    class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150"
-                                >
-                                    View Tasks
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Files Card -->
-                    <div
-                        class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-200"
-                    >
-                        <div class="p-6">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0">
-                                    <div
-                                        class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center"
-                                    >
-                                        <svg
-                                            class="w-5 h-5 text-purple-600"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                                            ></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="ml-4">
-                                    <h3
-                                        class="text-lg font-medium text-gray-900"
-                                    >
-                                        Files
-                                    </h3>
-                                    <p class="text-sm text-gray-500">
-                                        Manage uploaded files
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="mt-4">
-                                <Link
-                                    href="/uploaded-files"
-                                    class="inline-flex items-center px-4 py-2 bg-purple-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-purple-700 focus:bg-purple-700 active:bg-purple-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition ease-in-out duration-150"
-                                >
-                                    View Files
-                                </Link>
-                            </div>
-                        </div>
+                    <div v-else class="text-gray-400 text-center py-8">
+                        You are not a team member in any projects yet.
                     </div>
                 </div>
             </div>
         </div>
     </AuthenticatedLayout>
 </template>
+
+<style scoped>
+.bg-primary {
+    background-color: #6366f1;
+}
+.bg-primaryHover {
+    background-color: #4f46e5;
+}
+.text-primary {
+    color: #6366f1;
+}
+</style>

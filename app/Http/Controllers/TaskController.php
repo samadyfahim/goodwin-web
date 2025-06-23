@@ -16,6 +16,7 @@ class TaskController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'status' => 'required|in:to_do,in_progress,done',
+            'deadline' => 'nullable|date',
             'users' => 'array',
             'users.*' => 'integer|exists:users,id',
         ]);
@@ -35,6 +36,7 @@ class TaskController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'status' => 'required|in:to_do,in_progress,done',
+            'deadline' => 'nullable|date',
             'users' => 'array',
             'users.*' => 'integer|exists:users,id',
         ]);

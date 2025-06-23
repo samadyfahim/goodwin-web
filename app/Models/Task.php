@@ -17,7 +17,13 @@ class Task extends Model
         'name',
         'description',
         'status',
+        'deadline',
         'created_by',
+    ];
+
+    protected $casts = [
+        'deadline' => 'date',
+        'created_by' => 'integer',
     ];
 
     /**

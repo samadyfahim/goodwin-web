@@ -23,6 +23,7 @@ class TaskFactory extends Factory
             'name' => fake()->sentence(4),
             'description' => fake()->optional()->paragraph(),
             'status' => fake()->randomElement(['to_do', 'in_progress', 'done']),
+            'deadline' => fake()->optional()->dateTimeBetween('now', '+2 months'),
             'created_by' => User::factory(),
         ];
     }

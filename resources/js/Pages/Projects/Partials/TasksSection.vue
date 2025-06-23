@@ -16,6 +16,7 @@ const taskForm = useForm({
     description: "",
     status: "to_do",
     users: [],
+    deadline: "",
 });
 const taskStatusOptions = [
     { value: "to_do", label: "To Do", icon: "📝" },
@@ -67,10 +68,12 @@ function openTaskModal(task = null) {
         taskForm.description = task.description;
         taskForm.status = task.status;
         selectedUsers.value = task.users ? [...task.users] : [];
+        taskForm.deadline = task.deadline ? task.deadline.substring(0, 10) : "";
     } else {
         taskForm.reset();
         taskForm.status = "to_do";
         selectedUsers.value = [];
+        taskForm.deadline = "";
     }
     showTaskModal.value = true;
 }
@@ -218,6 +221,12 @@ function removeUserFromTaskList(task, user) {
                         <span class="text-xs text-gray-500"
                             >Created by {{ task.creator?.name }}</span
                         >
+                        <span v-if="task.deadline" class="text-xs text-gray-500"
+                            >Deadline:
+                            {{
+                                new Date(task.deadline).toLocaleDateString()
+                            }}</span
+                        >
                         <div
                             v-if="task.users && task.users.length"
                             class="flex items-center space-x-1 ml-4"
@@ -311,6 +320,13 @@ function removeUserFromTaskList(task, user) {
                 type="textarea"
                 :rows="3"
                 :error="taskForm.errors.description"
+            />
+            <FormInput
+                id="task-deadline"
+                label="Deadline"
+                v-model="taskForm.deadline"
+                type="date"
+                :error="taskForm.errors.deadline"
             />
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2"

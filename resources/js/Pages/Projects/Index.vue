@@ -176,17 +176,17 @@ function submitEdit() {
                                 <option value="completed">Completed</option>
                                 <option value="delayed">Delayed</option>
                             </select>
-                            <label class="inline-flex items-center mt-3">
-                                <input
-                                    type="checkbox"
-                                    v-model="showMineOnly"
-                                    class="form-checkbox text-primary"
-                                />
-                                <span class="ml-2 text-sm text-gray-700"
-                                    >Created by me</span
-                                >
-                            </label>
                         </div>
+                        <label class="inline-flex items-center mt-3">
+                            <input
+                                type="checkbox"
+                                v-model="showMineOnly"
+                                class="form-checkbox text-primary"
+                            />
+                            <span class="ml-2 text-sm text-gray-700"
+                                >Created by me</span
+                            >
+                        </label>
                     </div>
                 </div>
 

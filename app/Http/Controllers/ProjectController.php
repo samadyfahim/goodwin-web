@@ -125,4 +125,22 @@ class ProjectController extends Controller
         $project->delete();
         return redirect()->route('projects.index')->with('success', 'Project and all related data deleted successfully!');
     }
+
+    public function dashboardData()
+    {
+        $user = auth()->user();
+        $tasks = \App\Models\Task::with(['project'])
+            ->whereHas('users', function ($q) use ($user) {
+                $q->where('users.id', $user->id);
+            })
+            ->whereNotIn('status', ['completed', 'cancelled'])
+            ->orderBy('created_at', 'asc')
+            ->limit(10)
+            ->get();
+        $projects = $user->projects()->with('creator')->orderBy('created_at', 'desc')->get();
+        return inertia('Dashboard', [
+            'upcomingTasks' => $tasks,
+            'teamProjects' => $projects,
+        ]);
+    }
 } 

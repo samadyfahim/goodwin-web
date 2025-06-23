@@ -16,6 +16,24 @@ import { Head, Link } from "@inertiajs/vue3";
 
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                <!-- Welcome Message -->
+                <div class="mb-8">
+                    <div
+                        class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-200"
+                    >
+                        <div class="p-6 text-gray-900">
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">
+                                Welcome to Goodwin Web!
+                            </h3>
+                            <p class="text-gray-600">
+                                You're logged in! Use the cards above to
+                                navigate to different sections of your project
+                                management system.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
                 <div
                     class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                 >
@@ -48,7 +66,7 @@ import { Head, Link } from "@inertiajs/vue3";
                                     <h3
                                         class="text-lg font-medium text-gray-900"
                                     >
-                                        Projects
+                                        My Projects
                                     </h3>
                                     <p class="text-sm text-gray-500">
                                         Manage your projects
@@ -95,7 +113,7 @@ import { Head, Link } from "@inertiajs/vue3";
                                     <h3
                                         class="text-lg font-medium text-gray-900"
                                     >
-                                        Tasks
+                                        My Tasks
                                     </h3>
                                     <p class="text-sm text-gray-500">
                                         View and manage tasks
@@ -157,24 +175,6 @@ import { Head, Link } from "@inertiajs/vue3";
                                     View Files
                                 </Link>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Welcome Message -->
-                <div class="mt-8">
-                    <div
-                        class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-200"
-                    >
-                        <div class="p-6 text-gray-900">
-                            <h3 class="text-lg font-medium text-gray-900 mb-2">
-                                Welcome to Goodwin Web!
-                            </h3>
-                            <p class="text-gray-600">
-                                You're logged in! Use the cards above to
-                                navigate to different sections of your project
-                                management system.
-                            </p>
                         </div>
                     </div>
                 </div>

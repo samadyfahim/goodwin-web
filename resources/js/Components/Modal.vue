@@ -1,123 +1,120 @@
 <script setup>
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 
 const props = defineProps({
-    show: {
+    open: {
         type: Boolean,
-        default: false,
+        required: true,
+    },
+    title: {
+        type: String,
+        default: "",
     },
     maxWidth: {
         type: String,
-        default: '2xl',
+        default: "max-w-lg",
     },
-    closeable: {
+    persistent: {
         type: Boolean,
-        default: true,
+        default: false,
     },
 });
 
-const emit = defineEmits(['close']);
-const dialog = ref();
-const showSlot = ref(props.show);
-
-watch(
-    () => props.show,
-    () => {
-        if (props.show) {
-            document.body.style.overflow = 'hidden';
-            showSlot.value = true;
-
-            dialog.value?.showModal();
-        } else {
-            document.body.style.overflow = '';
-
-            setTimeout(() => {
-                dialog.value?.close();
-                showSlot.value = false;
-            }, 200);
-        }
-    },
-);
+const emit = defineEmits(["close"]);
 
 const close = () => {
-    if (props.closeable) {
-        emit('close');
-    }
+    if (!props.persistent) emit("close");
 };
 
 const closeOnEscape = (e) => {
-    if (e.key === 'Escape') {
+    if (e.key === "Escape") {
         e.preventDefault();
 
-        if (props.show) {
+        if (props.open) {
             close();
         }
     }
 };
 
-onMounted(() => document.addEventListener('keydown', closeOnEscape));
+onMounted(() => document.addEventListener("keydown", closeOnEscape));
 
 onUnmounted(() => {
-    document.removeEventListener('keydown', closeOnEscape);
-
-    document.body.style.overflow = '';
+    document.removeEventListener("keydown", closeOnEscape);
 });
 
 const maxWidthClass = computed(() => {
     return {
-        sm: 'sm:max-w-sm',
-        md: 'sm:max-w-md',
-        lg: 'sm:max-w-lg',
-        xl: 'sm:max-w-xl',
-        '2xl': 'sm:max-w-2xl',
+        sm: "sm:max-w-sm",
+        md: "sm:max-w-md",
+        lg: "sm:max-w-lg",
+        xl: "sm:max-w-xl",
+        "2xl": "sm:max-w-2xl",
     }[props.maxWidth];
 });
 </script>
 
 <template>
-    <dialog
-        class="z-50 m-0 min-h-full min-w-full overflow-y-auto bg-transparent backdrop:bg-transparent"
-        ref="dialog"
-    >
+    <transition name="fade">
         <div
-            class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0"
-            scroll-region
+            v-if="open"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40"
         >
-            <Transition
-                enter-active-class="ease-out duration-300"
-                enter-from-class="opacity-0"
-                enter-to-class="opacity-100"
-                leave-active-class="ease-in duration-200"
-                leave-from-class="opacity-100"
-                leave-to-class="opacity-0"
+            <div
+                :class="`bg-white rounded-lg shadow-xl w-full ${maxWidth} mx-4 relative`"
+                @click.stop
+                role="dialog"
+                aria-modal="true"
             >
+                <!-- Header -->
                 <div
-                    v-show="show"
-                    class="fixed inset-0 transform transition-all"
-                    @click="close"
+                    class="flex items-center justify-between px-6 py-4 border-b border-gray-200"
                 >
-                    <div
-                        class="absolute inset-0 bg-gray-500 opacity-75"
-                    />
+                    <h3 class="text-lg font-semibold text-gray-900">
+                        <slot name="title">{{ title }}</slot>
+                    </h3>
+                    <button
+                        v-if="!persistent"
+                        @click="close"
+                        class="text-gray-400 hover:text-gray-600 focus:outline-none"
+                        aria-label="Close"
+                    >
+                        <svg
+                            class="h-6 w-6"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"
+                            />
+                        </svg>
+                    </button>
                 </div>
-            </Transition>
-
-            <Transition
-                enter-active-class="ease-out duration-300"
-                enter-from-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                enter-to-class="opacity-100 translate-y-0 sm:scale-100"
-                leave-active-class="ease-in duration-200"
-                leave-from-class="opacity-100 translate-y-0 sm:scale-100"
-                leave-to-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-            >
+                <!-- Content -->
+                <div class="px-6 py-4">
+                    <slot />
+                </div>
+                <!-- Actions -->
                 <div
-                    v-show="show"
-                    class="mb-6 transform overflow-hidden rounded-lg bg-white shadow-xl transition-all sm:mx-auto sm:w-full"
-                    :class="maxWidthClass"
+                    class="flex justify-end space-x-2 px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-lg"
                 >
-                    <slot v-if="showSlot" />
+                    <slot name="actions" />
                 </div>
-            </Transition>
+            </div>
         </div>
-    </dialog>
+    </transition>
 </template>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.2s;
+}
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+</style>

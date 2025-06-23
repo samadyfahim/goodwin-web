@@ -63,11 +63,55 @@ class ProjectController extends Controller
             'tasks.creator',
             'users',
             'files',
-            'notes'
+            'notes.comments.creator',
+            'notes.creator',
         ]);
-
+        // Map tasks to ensure users are arrays
+        $project->tasks->transform(function ($task) {
+            $task->users = $task->users->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                ];
+            })->values()->all();
+            return $task;
+        });
+        // Flatten comments for easier frontend use
+        $comments = $project->notes->flatMap(function($note) {
+            return $note->comments;
+        })->map(function($comment) {
+            return [
+                'id' => $comment->id,
+                'note_id' => $comment->note_id,
+                'content' => $comment->content,
+                'created_by' => $comment->created_by,
+                'created_at' => $comment->created_at,
+                'updated_at' => $comment->updated_at,
+                'creator' => $comment->creator ? [
+                    'id' => $comment->creator->id,
+                    'name' => $comment->creator->name,
+                    'email' => $comment->creator->email,
+                ] : null,
+            ];
+        })->values()->all();
         return Inertia::render('Projects/Show', [
-            'project' => $project
+            'project' => $project,
+            'comments' => $comments,
         ]);
+    }
+
+    /**
+     * Update the specified project in storage.
+     */
+    public function update(Request $request, Project $project)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'status' => 'required|in:planned,active,completed,delayed',
+        ]);
+        $project->update($validated);
+        return redirect()->route('projects.show', $project)->with('success', 'Project updated successfully!');
     }
 } 

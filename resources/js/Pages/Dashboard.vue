@@ -42,7 +42,7 @@ const projectStatusLabels = {
             <h2 class="text-2xl font-bold text-gray-900">Dashboard</h2>
         </template>
 
-        <div class="py-12 bg-gray-50 min-h-screen">
+        <div class="py-12 min-h-screen">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-10">
                 <!-- Welcome Message -->
                 <div

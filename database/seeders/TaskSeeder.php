@@ -24,59 +24,28 @@ class TaskSeeder extends Seeder
         );
 
         $users = User::all();
+        $goodwin = User::where('email', 'valves@goodwingroup.com')->first();
         $projects = Project::all();
 
         if ($projects->isEmpty()) {
             return;
         }
 
-        // Create sample tasks
-        Task::factory(50)->create([
-            'created_by' => $admin->id,
-        ])->each(function ($task) use ($users) {
-            // Get users assigned to this task's project
-            $projectUsers = $task->project->users;
-            
-            if ($projectUsers->count() > 0) {
-                // Assign random users from the project to the task
-                $task->users()->attach(
-                    $projectUsers->random(rand(1, min(3, $projectUsers->count())))->pluck('id')->toArray()
-                );
+        // For each project, create 3-4 tasks and assign users
+        foreach ($projects as $project) {
+            $team = $project->users;
+            for ($i = 0; $i < rand(3, 4); $i++) {
+                $task = Task::factory()->create([
+                    'project_id' => $project->id,
+                    'created_by' => $team->random()->id,
+                ]);
+                $assignees = $team->random(rand(1, min(3, $team->count())))->pluck('id')->toArray();
+                // Assign Goodwin to some tasks if he's a team member
+                if ($goodwin && $team->contains($goodwin) && rand(0, 1)) {
+                    $assignees[] = $goodwin->id;
+                }
+                $task->users()->attach(array_unique($assignees));
             }
-        });
-
-        // Create some specific tasks for testing
-        $project = $projects->first();
-        
-        $task1 = Task::create([
-            'project_id' => $project->id,
-            'name' => 'Design Homepage Layout',
-            'description' => 'Create wireframes and mockups for the homepage redesign',
-            'status' => 'in_progress',
-            'created_by' => $admin->id,
-        ]);
-
-        $task2 = Task::create([
-            'project_id' => $project->id,
-            'name' => 'Implement User Authentication',
-            'description' => 'Set up login, registration, and password reset functionality',
-            'status' => 'to_do',
-            'created_by' => $admin->id,
-        ]);
-
-        $task3 = Task::create([
-            'project_id' => $project->id,
-            'name' => 'Write API Documentation',
-            'description' => 'Create comprehensive API documentation for developers',
-            'status' => 'done',
-            'created_by' => $admin->id,
-        ]);
-
-        // Assign users to specific tasks (only if they're assigned to the project)
-        if ($project->users->count() > 0) {
-            $task1->users()->attach($project->users->first()->id);
-            $task2->users()->attach($project->users->take(2)->pluck('id')->toArray());
-            $task3->users()->attach($project->users->random()->id);
         }
     }
 } 

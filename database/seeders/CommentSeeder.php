@@ -24,44 +24,27 @@ class CommentSeeder extends Seeder
         );
 
         $users = User::all();
+        $goodwin = User::where('email', 'valves@goodwingroup.com')->first();
         $notes = Note::all();
 
         if ($notes->isEmpty()) {
             return;
         }
 
-        // Create sample comments
-        Comment::factory(40)->create([
-            'created_by' => $admin->id,
-        ]);
-
-        // Create some specific comments for testing
-        $note = $notes->first();
-        
-        Comment::create([
-            'note_id' => $note->id,
-            'content' => 'Great meeting! I think we should also consider adding analytics tracking to monitor user engagement.',
-            'created_by' => $admin->id,
-        ]);
-
-        Comment::create([
-            'note_id' => $note->id,
-            'content' => 'I agree with the timeline. We should also set up weekly check-ins to keep everyone on track.',
-            'created_by' => $users->random()->id,
-        ]);
-
-        Comment::create([
-            'note_id' => $note->id,
-            'content' => 'Don\'t forget to include the QA team in the communication plan. They\'ll need early access for testing.',
-            'created_by' => $users->random()->id,
-        ]);
-
-        // Create comments for other notes
-        foreach ($notes->take(5) as $note) {
-            Comment::factory(rand(1, 3))->create([
-                'note_id' => $note->id,
-                'created_by' => $users->random()->id,
-            ]);
+        // For each note, create 0-7 comments
+        foreach ($notes as $note) {
+            $numComments = rand(0, 7);
+            for ($i = 0; $i < $numComments; $i++) {
+                $author = $users->random();
+                // Assign Goodwin as author to some comments
+                if ($goodwin && rand(0, 4) === 0) {
+                    $author = $goodwin;
+                }
+                Comment::factory()->create([
+                    'note_id' => $note->id,
+                    'created_by' => $author->id,
+                ]);
+            }
         }
     }
 } 

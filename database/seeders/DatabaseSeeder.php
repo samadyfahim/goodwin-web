@@ -13,6 +13,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Create Goodwin user
+        $goodwin = \App\Models\User::firstOrCreate([
+            'email' => 'valves@goodwingroup.com',
+        ], [
+            'name' => 'Goodwin',
+            'password' => bcrypt('12345678'),
+        ]);
+
         // Create the main admin user first
         User::factory()->create([
             'name' => 'Test User',

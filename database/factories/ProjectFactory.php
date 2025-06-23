@@ -19,7 +19,7 @@ class ProjectFactory extends Factory
     {
         return [
             'name' => fake()->sentence(3),
-            'description' => fake()->optional()->paragraphs(10, true),
+            'description' => fake()->optional()->paragraphs(30, true),
             'status' => fake()->randomElement(['planned', 'active', 'completed', 'delayed']),
             'deadline' => fake()->optional()->dateTimeBetween('now', '+6 months'),
             'created_by' => User::factory(),

@@ -24,35 +24,22 @@ class NoteSeeder extends Seeder
         );
 
         $projects = Project::all();
+        $goodwin = User::where('email', 'valves@goodwingroup.com')->first();
 
         if ($projects->isEmpty()) {
             return;
         }
 
-        // Create sample notes
-        Note::factory(25)->create([
-            'created_by' => $admin->id,
-        ]);
-
-        // Create some specific notes for testing
-        $project = $projects->first();
-        
-        Note::create([
-            'project_id' => $project->id,
-            'content' => "Project kickoff meeting notes:\n\n- Discussed project scope and timeline\n- Identified key stakeholders\n- Set initial milestones\n- Agreed on communication channels\n\nNext steps: Create detailed project plan and assign team members.",
-            'created_by' => $admin->id,
-        ]);
-
-        Note::create([
-            'project_id' => $project->id,
-            'content' => "Technical requirements review:\n\n- Frontend: React.js with TypeScript\n- Backend: Laravel API\n- Database: MySQL\n- Hosting: AWS\n- CI/CD: GitHub Actions\n\nAll team members should review these requirements and provide feedback.",
-            'created_by' => $admin->id,
-        ]);
-
-        Note::create([
-            'project_id' => $project->id,
-            'content' => "Client feedback from latest demo:\n\n✅ Positive feedback:\n- Clean and intuitive design\n- Fast loading times\n- Good mobile responsiveness\n\n⚠️ Areas for improvement:\n- Add more color options\n- Include additional payment methods\n- Improve search functionality\n\nAction items: Address feedback in next sprint.",
-            'created_by' => $admin->id,
-        ]);
+        // For each project, create 5-10 notes
+        foreach ($projects as $project) {
+            $team = $project->users;
+            for ($i = 0; $i < rand(5, 10); $i++) {
+                $author = $team->isNotEmpty() ? $team->random() : $admin;
+                Note::factory()->create([
+                    'project_id' => $project->id,
+                    'created_by' => $author->id,
+                ]);
+            }
+        }
     }
 } 

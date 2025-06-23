@@ -24,13 +24,8 @@ class FileSeeder extends Seeder
         //     ]
         // );
 
-        // $projects = Project::all();
-        // $tasks = Task::all();
-
-        // // Create sample files
-        // File::factory(30)->create([
-        //     'created_by' => $admin->id,
-        // ]);
+        $projects = \App\Models\Project::all();
+        $goodwin = \App\Models\User::where('email', 'valves@goodwingroup.com')->first();
 
         // // Create some specific files for testing
         // if ($projects->count() > 0) {
@@ -89,5 +84,17 @@ class FileSeeder extends Seeder
         //     'filepath' => 'uploads/general/style_guide.pdf',
         //     'created_by' => $admin->id,
         // ]);
+
+        // For each project, create 5-20 files
+        foreach ($projects as $project) {
+            $team = $project->users;
+            for ($i = 0; $i < rand(5, 20); $i++) {
+                $author = $team->isNotEmpty() ? $team->random() : null;
+                \App\Models\File::factory()->create([
+                    'project_id' => $project->id,
+                    'created_by' => $author ? $author->id : null,
+                ]);
+            }
+        }
     }
 } 

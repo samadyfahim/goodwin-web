@@ -16,9 +16,11 @@ class ProjectController extends Controller
         $projects = Project::with(['creator', 'customers', 'tasks', 'users'])
             ->orderBy('created_at', 'desc')
             ->get();
+        $authUserId = auth()->id();
 
         return Inertia::render('Projects/Index', [
-            'projects' => $projects
+            'projects' => $projects,
+            'authUserId' => $authUserId,
         ]);
     }
 
@@ -113,5 +115,14 @@ class ProjectController extends Controller
         ]);
         $project->update($validated);
         return redirect()->route('projects.show', $project)->with('success', 'Project updated successfully!');
+    }
+
+    /**
+     * Remove the specified project from storage.
+     */
+    public function destroy(Project $project)
+    {
+        $project->delete();
+        return redirect()->route('projects.index')->with('success', 'Project and all related data deleted successfully!');
     }
 } 

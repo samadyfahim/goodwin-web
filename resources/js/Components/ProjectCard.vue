@@ -1,12 +1,18 @@
 <script setup>
-import { Link } from "@inertiajs/vue3";
+import { Link, router } from "@inertiajs/vue3";
+import { ref, onMounted, onBeforeUnmount, watch } from "vue";
 
 const props = defineProps({
     project: {
         type: Object,
         required: true,
     },
+    authUserId: Number,
 });
+
+const showMenu = ref(false);
+const showDeleteModal = ref(false);
+let clickOutsideHandler = null;
 
 const getStatusColor = (status) => {
     const colors = {
@@ -32,6 +38,49 @@ const formatDate = (date) => {
     if (!date) return "No deadline";
     return new Date(date).toLocaleDateString();
 };
+
+function handleEdit() {
+    // Emit to parent to open edit modal for this project
+    // (Parent must listen for 'edit-project' event)
+    // $emit is only available in Options API, so use defineEmits
+    emit("edit-project", props.project);
+    showMenu.value = false;
+}
+
+function handleDelete() {
+    showDeleteModal.value = true;
+    showMenu.value = false;
+}
+
+function confirmDelete() {
+    router.delete(route("projects.destroy", { project: props.project.id }), {
+        onSuccess: () => {
+            showDeleteModal.value = false;
+        },
+    });
+}
+
+const emit = defineEmits(["edit-project"]);
+
+watch(showMenu, (val) => {
+    if (val) {
+        clickOutsideHandler = (e) => {
+            if (!e.target.closest(".project-card-menu")) {
+                showMenu.value = false;
+            }
+        };
+        document.addEventListener("mousedown", clickOutsideHandler);
+    } else if (clickOutsideHandler) {
+        document.removeEventListener("mousedown", clickOutsideHandler);
+        clickOutsideHandler = null;
+    }
+});
+
+onBeforeUnmount(() => {
+    if (clickOutsideHandler) {
+        document.removeEventListener("mousedown", clickOutsideHandler);
+    }
+});
 </script>
 
 <template>
@@ -59,6 +108,43 @@ const formatDate = (date) => {
                                 project.status.slice(1)
                             }}
                         </span>
+                    </div>
+                </div>
+                <div
+                    v-if="String(authUserId) === String(project.created_by)"
+                    class="relative project-card-menu"
+                >
+                    <button
+                        @click="showMenu = !showMenu"
+                        class="p-2 text-gray-700 hover:text-primary focus:outline-none"
+                        aria-label="Project actions"
+                    >
+                        <svg
+                            class="w-7 h-7"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <circle cx="12" cy="6" r="1.5" />
+                            <circle cx="12" cy="12" r="1.5" />
+                            <circle cx="12" cy="18" r="1.5" />
+                        </svg>
+                    </button>
+                    <div
+                        v-if="showMenu"
+                        class="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded-md shadow-lg z-10"
+                    >
+                        <button
+                            @click="$emit('edit-project', project)"
+                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                            Edit
+                        </button>
+                        <button
+                            @click="handleDelete"
+                            class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                        >
+                            Delete
+                        </button>
                     </div>
                 </div>
             </div>
@@ -128,23 +214,33 @@ const formatDate = (date) => {
                 >
                     View Details
                 </Link>
-                <button
-                    class="px-3 py-2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
-                >
-                    <svg
-                        class="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+            </div>
+        </div>
+        <!-- Delete Confirmation Modal -->
+        <div
+            v-if="showDeleteModal"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40"
+        >
+            <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm">
+                <h3 class="text-lg font-semibold mb-4">Delete Project</h3>
+                <p class="mb-6">
+                    Are you sure you want to delete this project and all related
+                    data? This action cannot be undone.
+                </p>
+                <div class="flex justify-end space-x-2">
+                    <button
+                        @click="showDeleteModal = false"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
                     >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-                        ></path>
-                    </svg>
-                </button>
+                        Cancel
+                    </button>
+                    <button
+                        @click="confirmDelete"
+                        class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
+                    >
+                        Delete
+                    </button>
+                </div>
             </div>
         </div>
     </div>

@@ -6,10 +6,12 @@ import { ref, watch } from "vue";
 const props = defineProps({ project: Object });
 const emit = defineEmits(["refresh"]);
 
-const customerForm = useForm({ customer_id: "" });
+const showAddForm = ref(false);
+const customerForm = useForm({ customer_ids: [] });
 const search = ref("");
 const suggestions = ref([]);
 const showSuggestions = ref(false);
+const selectedCustomers = ref([]);
 
 let debounceTimeout = null;
 
@@ -32,19 +34,54 @@ watch(search, async (val) => {
     }, 200);
 });
 
+function toggleAddForm() {
+    showAddForm.value = !showAddForm.value;
+    if (!showAddForm.value) {
+        selectedCustomers.value = [];
+        search.value = "";
+        suggestions.value = [];
+        showSuggestions.value = false;
+        customerForm.reset();
+    }
+}
+
 function selectSuggestion(customer) {
-    customerForm.customer_id = customer.id;
+    if (!selectedCustomers.value.some((c) => c.id === customer.id)) {
+        selectedCustomers.value.push(customer);
+    }
     search.value = "";
     suggestions.value = [];
     showSuggestions.value = false;
+}
+
+function removeSelectedCustomer(customer) {
+    selectedCustomers.value = selectedCustomers.value.filter(
+        (c) => c.id !== customer.id
+    );
+}
+
+function submitCustomers() {
+    if (selectedCustomers.value.length === 0) {
+        alert("Please select at least one customer.");
+        return;
+    }
+
+    // Use the form to submit all customers at once
+    customerForm.customer_ids = selectedCustomers.value.map((c) => c.id);
+
     customerForm.post(
         route("projects.customers.store", { project: props.project.id }),
         {
-            onSuccess: () => emit("refresh"),
-            onError: () =>
-                alert(
-                    customerForm.errors.customer_id || "Failed to add customer."
-                ),
+            onSuccess: () => {
+                toggleAddForm();
+                emit("refresh");
+            },
+            onError: () => {
+                alert("Failed to add customers.");
+            },
+            onFinish: () => {
+                customerForm.reset();
+            },
         }
     );
 }
@@ -74,34 +111,124 @@ function onBlur() {
         class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
     >
         <div class="px-6 py-4 border-b border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">Customers</h3>
-            <div class="mb-4 relative">
-                <input
-                    v-model="search"
-                    type="text"
-                    placeholder="Add by name, company, or email..."
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200"
-                    @blur="onBlur"
-                />
-                <ul
-                    v-if="showSuggestions && suggestions.length"
-                    class="absolute z-10 w-full bg-white border border-gray-200 rounded-md mt-1 shadow-lg max-h-48 overflow-auto"
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Customers</h3>
+                <button
+                    @click="toggleAddForm()"
+                    class="inline-flex items-center px-3 py-2 bg-primary border border-transparent rounded-md text-sm font-medium text-white hover:bg-primaryHover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200"
                 >
-                    <li
-                        v-for="customer in suggestions"
-                        :key="customer.id"
-                        @click="selectSuggestion(customer)"
-                        class="px-4 py-2 cursor-pointer hover:bg-primary/10"
+                    <svg
+                        class="w-4 h-4 mr-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
                     >
-                        <span class="font-medium">{{ customer.name }}</span>
-                        <span class="text-gray-500 ml-2">{{
-                            customer.company_name
-                        }}</span>
-                        <span class="text-gray-400 ml-2">{{
-                            customer.email
-                        }}</span>
-                    </li>
-                </ul>
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                        />
+                    </svg>
+                    {{ showAddForm ? "Cancel" : "Add Customers" }}
+                </button>
+            </div>
+
+            <!-- Add Customer Form -->
+            <div
+                v-if="showAddForm"
+                class="space-y-4 p-4 bg-gray-50 rounded-lg border"
+            >
+                <div class="relative">
+                    <input
+                        v-model="search"
+                        type="text"
+                        placeholder="Search by name, company, or email..."
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200"
+                        @blur="onBlur"
+                    />
+                    <ul
+                        v-if="showSuggestions && suggestions.length"
+                        class="absolute z-10 w-full bg-white border border-gray-200 rounded-md mt-1 shadow-lg max-h-48 overflow-auto"
+                    >
+                        <li
+                            v-for="customer in suggestions"
+                            :key="customer.id"
+                            @click="selectSuggestion(customer)"
+                            class="px-4 py-2 cursor-pointer hover:bg-primary/10"
+                        >
+                            <span class="font-medium">{{ customer.name }}</span>
+                            <span class="text-gray-500 ml-2">{{
+                                customer.company_name
+                            }}</span>
+                            <span class="text-gray-400 ml-2">{{
+                                customer.email
+                            }}</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div v-if="selectedCustomers.length > 0">
+                    <label class="block text-sm font-medium text-gray-700 mb-2"
+                        >Selected Customers</label
+                    >
+                    <div class="flex flex-wrap gap-2">
+                        <span
+                            v-for="customer in selectedCustomers"
+                            :key="customer.id"
+                            class="bg-primary/10 text-primary px-2 py-1 rounded flex items-center"
+                        >
+                            {{ customer.name }}
+                            <button
+                                @click="removeSelectedCustomer(customer)"
+                                class="ml-1 text-xs text-red-500"
+                            >
+                                &times;
+                            </button>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-2">
+                    <button
+                        type="button"
+                        @click="toggleAddForm"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        type="button"
+                        @click="submitCustomers"
+                        :disabled="
+                            selectedCustomers.length === 0 ||
+                            customerForm.processing
+                        "
+                        class="inline-flex items-center px-4 py-2 bg-primary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-primaryHover focus:bg-primaryHover active:bg-primaryHover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition ease-in-out duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <svg
+                            v-if="customerForm.processing"
+                            class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                        >
+                            <circle
+                                class="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                stroke-width="4"
+                            ></circle>
+                            <path
+                                class="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
+                        </svg>
+                        Add Customers
+                    </button>
+                </div>
             </div>
         </div>
         <div
@@ -158,8 +285,9 @@ function onBlur() {
             icon="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
             title="No customers"
             description="Add customers to get started."
-            action-text="Add Customer"
+            action-text="Add Customers"
             :action-href="null"
+            @click="toggleAddForm()"
         />
     </div>
 </template>

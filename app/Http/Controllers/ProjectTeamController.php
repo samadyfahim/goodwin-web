@@ -11,10 +11,30 @@ class ProjectTeamController extends Controller
     public function store(Request $request, Project $project)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
+            'user_ids' => 'sometimes|array',
+            'user_ids.*' => 'exists:users,id',
+            'user_id' => 'sometimes|exists:users,id', // For backward compatibility
         ]);
-        $project->users()->syncWithoutDetaching([$validated['user_id']]);
-        return back()->with('success', 'Team member added!');
+
+        $userIds = [];
+        
+        // Handle both single user_id and array of user_ids
+        if ($request->has('user_ids') && is_array($request->user_ids)) {
+            $userIds = $request->user_ids;
+        } elseif ($request->has('user_id')) {
+            $userIds = [$request->user_id];
+        }
+
+        if (empty($userIds)) {
+            return back()->withErrors(['user_ids' => 'No team members selected.']);
+        }
+
+        $project->users()->syncWithoutDetaching($userIds);
+        
+        $count = count($userIds);
+        $message = $count === 1 ? 'Team member added!' : "{$count} team members added!";
+        
+        return back()->with('success', $message);
     }
 
     public function destroy(Project $project, User $user)

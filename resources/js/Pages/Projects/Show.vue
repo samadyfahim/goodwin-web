@@ -1,3 +1,10 @@
+<!--
+Projects/Show.vue
+Displays a single project's details, tabs for tasks, notes, team, files, and customers.
+Props:
+- project: Project object
+- comments: Array of comment objects
+-->
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import StatusBadge from "@/Components/StatusBadge.vue";
@@ -190,7 +197,7 @@ const showTeamModal = ref(false);
 const teamForm = useForm({
     user_id: "",
 });
-const allUsers = ref([]); // You may want to fetch this from the backend for real app
+const allUsers = ref([]);
 function openTeamModal() {
     showTeamModal.value = true;
 }

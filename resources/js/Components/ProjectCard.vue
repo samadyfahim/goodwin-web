@@ -1,3 +1,9 @@
+<!--
+ProjectCard.vue
+Card component for displaying project summary information.
+Props:
+- project: Project object
+-->
 <script setup>
 import { Link, router } from "@inertiajs/vue3";
 import { ref, onMounted, onBeforeUnmount, watch } from "vue";

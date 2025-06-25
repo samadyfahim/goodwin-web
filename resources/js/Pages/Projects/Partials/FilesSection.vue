@@ -1,3 +1,11 @@
+<!--
+FilesSection.vue
+Section for managing files associated with a project. Allows uploading, downloading, and removing files.
+Props:
+- project: Project object
+Emits:
+- refresh: Triggered after files are added or removed
+-->
 <script setup>
 import EmptyState from "@/Components/EmptyState.vue";
 import Modal from "@/Components/Modal.vue";

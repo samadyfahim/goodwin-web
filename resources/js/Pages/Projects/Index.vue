@@ -1,3 +1,10 @@
+<!--
+Projects/Index.vue
+Lists all projects, with search, filter, and edit modal functionality.
+Props:
+- projects: Array of project objects
+- authUserId: ID of the authenticated user
+-->
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import ProjectCard from "@/Components/ProjectCard.vue";

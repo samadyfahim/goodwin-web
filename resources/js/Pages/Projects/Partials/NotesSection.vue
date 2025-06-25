@@ -1,3 +1,11 @@
+<!--
+NotesSection.vue
+Section for managing notes within a project. Allows creating, editing, and removing notes and comments.
+Props:
+- project: Project object
+Emits:
+- refresh: Triggered after notes or comments are added, updated, or removed
+-->
 <script setup>
 import EmptyState from "@/Components/EmptyState.vue";
 import Modal from "@/Components/Modal.vue";

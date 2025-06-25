@@ -1,3 +1,7 @@
+<!--
+Projects/Create.vue
+Form for creating a new project, with fields for name, description, status, and deadline.
+-->
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import FormInput from "@/Components/FormInput.vue";

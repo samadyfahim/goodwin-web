@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Comment model representing a comment entity on a note.
+ * Handles relationships to note and creator.
+ */
 class Comment extends Model
 {
     use HasFactory;
@@ -18,6 +22,8 @@ class Comment extends Model
 
     /**
      * Get the note that owns this comment.
+     *
+     * @return BelongsTo
      */
     public function note(): BelongsTo
     {
@@ -26,6 +32,8 @@ class Comment extends Model
 
     /**
      * Get the user who created this comment.
+     *
+     * @return BelongsTo
      */
     public function creator(): BelongsTo
     {

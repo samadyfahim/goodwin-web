@@ -5,8 +5,17 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Customer;
 
+/**
+ * Controller for providing customer suggestions for autocomplete/search.
+ */
 class CustomerSuggestionController extends Controller
 {
+    /**
+     * Return a list of customer suggestions based on a search query.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index(Request $request)
     {
         $q = $request->input('q');

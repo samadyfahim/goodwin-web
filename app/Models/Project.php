@@ -8,6 +8,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * Project model representing a project entity.
+ * Handles relationships to users, customers, tasks, files, and notes.
+ */
 class Project extends Model
 {
     use HasFactory;
@@ -26,6 +30,8 @@ class Project extends Model
 
     /**
      * Get the user who created this project.
+     *
+     * @return BelongsTo
      */
     public function creator(): BelongsTo
     {
@@ -34,6 +40,8 @@ class Project extends Model
 
     /**
      * Get the users assigned to this project.
+     *
+     * @return BelongsToMany
      */
     public function users(): BelongsToMany
     {
@@ -42,6 +50,8 @@ class Project extends Model
 
     /**
      * Get the customers associated with this project.
+     *
+     * @return BelongsToMany
      */
     public function customers(): BelongsToMany
     {
@@ -50,6 +60,8 @@ class Project extends Model
 
     /**
      * Get the tasks for this project.
+     *
+     * @return HasMany
      */
     public function tasks(): HasMany
     {
@@ -58,6 +70,8 @@ class Project extends Model
 
     /**
      * Get the files for this project.
+     *
+     * @return HasMany
      */
     public function files(): HasMany
     {
@@ -66,6 +80,8 @@ class Project extends Model
 
     /**
      * Get the notes for this project.
+     *
+     * @return HasMany
      */
     public function notes(): HasMany
     {

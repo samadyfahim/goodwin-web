@@ -1,3 +1,7 @@
+<!--
+Auth/Login.vue
+Login form for user authentication.
+-->
 <script setup>
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import Checkbox from "@/Components/Checkbox.vue";

@@ -1,3 +1,9 @@
+<!--
+UploadedFiles.vue
+Displays a table of all uploaded files, with download links and uploader/project info.
+Props:
+- files: Array of file objects
+-->
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, Link } from "@inertiajs/vue3";

@@ -1,3 +1,13 @@
+<!--
+FormInput.vue
+Reusable form input component for text, textarea, and date fields.
+Props:
+- id: String
+- label: String
+- modelValue: String
+- type: String
+- error: String
+-->
 <script setup>
 const props = defineProps({
     id: {

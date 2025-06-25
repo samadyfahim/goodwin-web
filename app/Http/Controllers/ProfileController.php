@@ -11,10 +11,17 @@ use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
 
+/**
+ * Controller for managing user profile actions.
+ * Handles profile editing, updating, and account deletion.
+ */
 class ProfileController extends Controller
 {
     /**
      * Display the user's profile form.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Inertia\Response
      */
     public function edit(Request $request): Response
     {
@@ -26,11 +33,15 @@ class ProfileController extends Controller
 
     /**
      * Update the user's profile information.
+     *
+     * @param  \App\Http\Requests\ProfileUpdateRequest  $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $request->user()->fill($request->validated());
 
+        // If the email was changed, mark as unverified
         if ($request->user()->isDirty('email')) {
             $request->user()->email_verified_at = null;
         }
@@ -42,6 +53,9 @@ class ProfileController extends Controller
 
     /**
      * Delete the user's account.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Request $request): RedirectResponse
     {

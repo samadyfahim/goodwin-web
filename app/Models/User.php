@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * User model representing an application user.
+ * Handles authentication, notifications, and relationships to tasks and projects.
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -48,6 +52,8 @@ class User extends Authenticatable
 
     /**
      * The tasks this user is assigned to.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function tasks()
     {
@@ -56,6 +62,8 @@ class User extends Authenticatable
 
     /**
      * The projects this user is a team member of.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function projects()
     {

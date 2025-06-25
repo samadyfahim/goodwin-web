@@ -1,3 +1,13 @@
+<!--
+EmptyState.vue
+Component for displaying an empty state with icon, title, and description.
+Props:
+- icon: String
+- title: String
+- description: String
+- actionText: String
+- actionHref: String|null
+-->
 <script setup>
 const props = defineProps({
     icon: {

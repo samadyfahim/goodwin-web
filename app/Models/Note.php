@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * Note model representing a note entity within a project.
+ * Handles relationships to project, creator, and comments.
+ */
 class Note extends Model
 {
     use HasFactory;
@@ -19,6 +23,8 @@ class Note extends Model
 
     /**
      * Get the project that owns this note.
+     *
+     * @return BelongsTo
      */
     public function project(): BelongsTo
     {
@@ -27,6 +33,8 @@ class Note extends Model
 
     /**
      * Get the user who created this note.
+     *
+     * @return BelongsTo
      */
     public function creator(): BelongsTo
     {
@@ -35,6 +43,8 @@ class Note extends Model
 
     /**
      * Get the comments for this note.
+     *
+     * @return HasMany
      */
     public function comments(): HasMany
     {

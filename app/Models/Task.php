@@ -8,6 +8,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * Task model representing a task entity within a project.
+ * Handles relationships to project, creator, users, and files.
+ */
 class Task extends Model
 {
     use HasFactory;
@@ -28,6 +32,8 @@ class Task extends Model
 
     /**
      * Get the project that owns this task.
+     *
+     * @return BelongsTo
      */
     public function project(): BelongsTo
     {
@@ -36,6 +42,8 @@ class Task extends Model
 
     /**
      * Get the user who created this task.
+     *
+     * @return BelongsTo
      */
     public function creator(): BelongsTo
     {
@@ -44,6 +52,8 @@ class Task extends Model
 
     /**
      * Get the users assigned to this task.
+     *
+     * @return BelongsToMany
      */
     public function users(): BelongsToMany
     {
@@ -52,6 +62,8 @@ class Task extends Model
 
     /**
      * Get the files for this task.
+     *
+     * @return HasMany
      */
     public function files(): HasMany
     {

@@ -1,3 +1,9 @@
+<!--
+CustomersSection.vue
+Section for managing customers associated with a project. Allows searching, selecting, and removing customers.
+Props:
+- project: Project object
+-->
 <script setup>
 import EmptyState from "@/Components/EmptyState.vue";
 import { useForm, router } from "@inertiajs/vue3";

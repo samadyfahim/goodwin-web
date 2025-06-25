@@ -1,3 +1,11 @@
+<!--
+TeamSection.vue
+Section for managing team members associated with a project. Allows searching, selecting, and removing users.
+Props:
+- project: Project object
+Emits:
+- refresh: Triggered after team members are added or removed
+-->
 <script setup>
 import EmptyState from "@/Components/EmptyState.vue";
 import { useForm, router } from "@inertiajs/vue3";

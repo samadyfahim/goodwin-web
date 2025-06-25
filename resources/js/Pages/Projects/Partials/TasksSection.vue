@@ -1,3 +1,11 @@
+<!--
+TasksSection.vue
+Section for managing tasks within a project. Allows creating, editing, and removing tasks.
+Props:
+- project: Project object
+Emits:
+- refresh: Triggered after tasks are added, updated, or removed
+-->
 <script setup>
 import StatusBadge from "@/Components/StatusBadge.vue";
 import EmptyState from "@/Components/EmptyState.vue";

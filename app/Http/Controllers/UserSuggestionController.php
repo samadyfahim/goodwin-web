@@ -5,8 +5,17 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 
+/**
+ * Controller for providing user suggestions for autocomplete/search.
+ */
 class UserSuggestionController extends Controller
 {
+    /**
+     * Return a list of user suggestions based on a search query.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index(Request $request)
     {
         $q = $request->input('q');

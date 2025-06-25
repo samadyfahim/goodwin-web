@@ -1,3 +1,10 @@
+<!--
+Dashboard.vue
+Displays the user's dashboard with upcoming tasks and team projects.
+Props:
+- upcomingTasks: Array of tasks assigned to the user
+- teamProjects: Array of projects the user is a team member of
+-->
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import StatCard from "@/Components/StatCard.vue";

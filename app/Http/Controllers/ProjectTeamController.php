@@ -6,8 +6,19 @@ use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\Request;
 
+/**
+ * Controller for managing project team members.
+ * Handles adding and removing users from project teams.
+ */
 class ProjectTeamController extends Controller
 {
+    /**
+     * Add one or more users to a project team.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Project  $project
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request, Project $project)
     {
         $validated = $request->validate([
@@ -37,6 +48,13 @@ class ProjectTeamController extends Controller
         return back()->with('success', $message);
     }
 
+    /**
+     * Remove a user from a project team.
+     *
+     * @param  \App\Models\Project  $project
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function destroy(Project $project, User $user)
     {
         $project->users()->detach($user->id);

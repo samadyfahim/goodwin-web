@@ -1,3 +1,7 @@
+<!--
+Modal.vue
+Reusable modal dialog component for displaying overlays and forms.
+-->
 <script setup>
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 

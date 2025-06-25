@@ -6,13 +6,20 @@ use App\Models\Project;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
+/**
+ * Controller for managing projects and related dashboard data.
+ * Handles CRUD operations and data aggregation for project views.
+ */
 class ProjectController extends Controller
 {
     /**
-     * Display a listing of projects.
+     * Display a listing of all projects for the authenticated user.
+     *
+     * @return \Inertia\Response
      */
     public function index()
     {
+        // Eager load related models for performance
         $projects = Project::with(['creator', 'customers', 'tasks', 'users'])
             ->orderBy('created_at', 'desc')
             ->get();
@@ -26,6 +33,8 @@ class ProjectController extends Controller
 
     /**
      * Show the form for creating a new project.
+     *
+     * @return \Inertia\Response
      */
     public function create()
     {
@@ -34,6 +43,9 @@ class ProjectController extends Controller
 
     /**
      * Store a newly created project in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
@@ -54,10 +66,14 @@ class ProjectController extends Controller
     }
 
     /**
-     * Display the specified project.
+     * Display the specified project with all related data.
+     *
+     * @param  \App\Models\Project  $project
+     * @return \Inertia\Response
      */
     public function show(Project $project)
     {
+        // Eager load all related data for the project detail view
         $project->load([
             'creator',
             'customers',
@@ -68,7 +84,7 @@ class ProjectController extends Controller
             'notes.comments.creator',
             'notes.creator',
         ]);
-        // Map tasks to ensure users are arrays
+        // Map tasks to ensure users are arrays for frontend
         $project->tasks->transform(function ($task) {
             $task->users = $task->users->map(function ($user) {
                 return [
@@ -105,6 +121,10 @@ class ProjectController extends Controller
 
     /**
      * Update the specified project in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Project  $project
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, Project $project)
     {
@@ -119,6 +139,9 @@ class ProjectController extends Controller
 
     /**
      * Remove the specified project from storage.
+     *
+     * @param  \App\Models\Project  $project
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Project $project)
     {
@@ -126,9 +149,15 @@ class ProjectController extends Controller
         return redirect()->route('projects.index')->with('success', 'Project and all related data deleted successfully!');
     }
 
+    /**
+     * Get dashboard data for the authenticated user.
+     *
+     * @return \Inertia\Response
+     */
     public function dashboardData()
     {
         $user = auth()->user();
+        // Get up to 10 upcoming tasks assigned to the user
         $tasks = \App\Models\Task::with(['project'])
             ->whereHas('users', function ($q) use ($user) {
                 $q->where('users.id', $user->id);
@@ -137,6 +166,7 @@ class ProjectController extends Controller
             ->orderBy('created_at', 'asc')
             ->limit(10)
             ->get();
+        // Get all projects the user is a member of
         $projects = $user->projects()->with('creator')->orderBy('created_at', 'desc')->get();
         return inertia('Dashboard', [
             'upcomingTasks' => $tasks,

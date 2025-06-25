@@ -151,13 +151,11 @@ function onBlur() {
                         <li
                             v-for="user in suggestions"
                             :key="user.id"
-                            @click="selectSuggestion(user)"
+                            @mousedown="selectSuggestion(user)"
                             class="px-4 py-2 cursor-pointer hover:bg-primary/10"
                         >
                             <span class="font-medium">{{ user.name }}</span>
-                            <span class="text-gray-500 ml-2">{{
-                                user.email
-                            }}</span>
+                            <span class="text-gray-500 ml-2">{{ user.email }}</span>
                         </li>
                     </ul>
                 </div>

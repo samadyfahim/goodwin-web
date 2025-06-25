@@ -46,6 +46,7 @@ function toggleAddForm() {
 }
 
 function selectSuggestion(customer) {
+    console.log('Selected:', customer);
     if (!selectedCustomers.value.some((c) => c.id === customer.id)) {
         selectedCustomers.value.push(customer);
     }
@@ -61,6 +62,7 @@ function removeSelectedCustomer(customer) {
 }
 
 function submitCustomers() {
+    console.log('Submitting customers:', selectedCustomers.value);
     if (selectedCustomers.value.length === 0) {
         alert("Please select at least one customer.");
         return;
@@ -154,7 +156,7 @@ function onBlur() {
                         <li
                             v-for="customer in suggestions"
                             :key="customer.id"
-                            @click="selectSuggestion(customer)"
+                            @mousedown="console.log('Clicked', customer); selectSuggestion(customer)"
                             class="px-4 py-2 cursor-pointer hover:bg-primary/10"
                         >
                             <span class="font-medium">{{ customer.name }}</span>

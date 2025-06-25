@@ -157,14 +157,14 @@ class ProjectController extends Controller
     public function dashboardData()
     {
         $user = auth()->user();
-        // Get up to 10 upcoming tasks assigned to the user
+        // Get all tasks assigned to the user, sorted by deadline (soonest first, nulls last), then by created_at
         $tasks = \App\Models\Task::with(['project'])
             ->whereHas('users', function ($q) use ($user) {
                 $q->where('users.id', $user->id);
             })
             ->whereNotIn('status', ['completed', 'cancelled'])
+            ->orderByRaw('CASE WHEN deadline IS NULL THEN 1 ELSE 0 END, deadline ASC')
             ->orderBy('created_at', 'asc')
-            ->limit(10)
             ->get();
         // Get all projects the user is a member of
         $projects = $user->projects()->with('creator')->orderBy('created_at', 'desc')->get();

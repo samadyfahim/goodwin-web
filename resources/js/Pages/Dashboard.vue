@@ -9,10 +9,21 @@ Props:
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import StatCard from "@/Components/StatCard.vue";
 import { Head, Link } from "@inertiajs/vue3";
+import { computed } from "vue";
 
 const props = defineProps({
     upcomingTasks: Array,
     teamProjects: Array,
+});
+
+// Sort tasks by deadline (soonest first), tasks without deadline at the end
+const sortedTasks = computed(() => {
+    return [...props.upcomingTasks].sort((a, b) => {
+        if (!a.deadline && !b.deadline) return 0;
+        if (!a.deadline) return 1;
+        if (!b.deadline) return -1;
+        return new Date(a.deadline) - new Date(b.deadline);
+    });
 });
 
 const taskStatusColors = {
@@ -82,11 +93,11 @@ const projectStatusLabels = {
                             >
                         </div>
                         <div
-                            v-if="props.upcomingTasks.length > 0"
+                            v-if="sortedTasks.length > 0"
                             class="divide-y divide-gray-100"
                         >
                             <div
-                                v-for="task in props.upcomingTasks"
+                                v-for="task in sortedTasks"
                                 :key="task.id"
                                 class="py-4 flex flex-col md:flex-row md:items-center md:justify-between group hover:bg-primary/5 rounded-lg transition"
                             >

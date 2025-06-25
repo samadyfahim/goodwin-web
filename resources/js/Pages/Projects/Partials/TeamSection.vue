@@ -6,7 +6,6 @@ import { ref, watch } from "vue";
 const props = defineProps({ project: Object });
 const emit = defineEmits(["refresh"]);
 
-const showAddForm = ref(false);
 const teamForm = useForm({ user_ids: [] });
 const search = ref("");
 const suggestions = ref([]);
@@ -34,17 +33,6 @@ watch(search, async (val) => {
     }, 200);
 });
 
-function toggleAddForm() {
-    showAddForm.value = !showAddForm.value;
-    if (!showAddForm.value) {
-        selectedUsers.value = [];
-        search.value = "";
-        suggestions.value = [];
-        showSuggestions.value = false;
-        teamForm.reset();
-    }
-}
-
 function selectSuggestion(user) {
     if (!selectedUsers.value.some((u) => u.id === user.id)) {
         selectedUsers.value.push(user);
@@ -69,7 +57,11 @@ function submitTeamMembers() {
 
     teamForm.post(route("projects.team.store", { project: props.project.id }), {
         onSuccess: () => {
-            toggleAddForm();
+            teamForm.reset();
+            selectedUsers.value = [];
+            search.value = "";
+            suggestions.value = [];
+            showSuggestions.value = false;
             emit("refresh");
         },
         onError: () => {
@@ -110,32 +102,10 @@ function onBlur() {
                 <h3 class="text-lg font-semibold text-gray-900">
                     Team Members
                 </h3>
-                <button
-                    @click="toggleAddForm()"
-                    class="inline-flex items-center px-3 py-2 bg-primary border border-transparent rounded-md text-sm font-medium text-white hover:bg-primaryHover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200"
-                >
-                    <svg
-                        class="w-4 h-4 mr-1"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                        />
-                    </svg>
-                    {{ showAddForm ? "Cancel" : "Add Team Members" }}
-                </button>
             </div>
 
             <!-- Add Team Member Form -->
-            <div
-                v-if="showAddForm"
-                class="space-y-4 p-4 bg-gray-50 rounded-lg border"
-            >
+            <div class="space-y-4">
                 <div class="relative">
                     <input
                         v-model="search"
@@ -155,7 +125,9 @@ function onBlur() {
                             class="px-4 py-2 cursor-pointer hover:bg-primary/10"
                         >
                             <span class="font-medium">{{ user.name }}</span>
-                            <span class="text-gray-500 ml-2">{{ user.email }}</span>
+                            <span class="text-gray-500 ml-2">{{
+                                user.email
+                            }}</span>
                         </li>
                     </ul>
                 </div>
@@ -181,14 +153,7 @@ function onBlur() {
                     </div>
                 </div>
 
-                <div class="flex justify-end space-x-2">
-                    <button
-                        type="button"
-                        @click="toggleAddForm"
-                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200"
-                    >
-                        Cancel
-                    </button>
+                <div class="flex justify-start space-x-2">
                     <button
                         type="button"
                         @click="submitTeamMembers"
@@ -275,7 +240,6 @@ function onBlur() {
             description="Add team members to get started."
             action-text="Add Team Members"
             :action-href="null"
-            @click="toggleAddForm()"
         />
     </div>
 </template>

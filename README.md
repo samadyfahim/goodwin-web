@@ -1,4 +1,12 @@
-# Goodwin Web - Setup & Run Guide
+# Goodwin Web Project Management System
+
+## Demo
+
+(database is seeded with fake data, so when we try to open fake file it gives error, because it doesn't exist)
+
+https://github.com/user-attachments/assets/edc93146-3242-47a2-8bc2-d4c2358b9eda
+
+## Setup & Run Guide
 
 ## Prerequisites
 

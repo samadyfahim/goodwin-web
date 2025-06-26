@@ -8,7 +8,7 @@ https://github.com/user-attachments/assets/edc93146-3242-47a2-8bc2-d4c2358b9eda
 
 ## Setup & Run Guide
 
-## Prerequisites
+### Prerequisites
 
 -   **Docker** and **Docker Compose** ([Install Docker](https://docs.docker.com/get-docker/))
 -   **Git**
@@ -16,7 +16,7 @@ https://github.com/user-attachments/assets/edc93146-3242-47a2-8bc2-d4c2358b9eda
 
 ---
 
-## 1. Clone the Repository
+### 1. Clone the Repository
 
 ```bash
 git clone <your-repo-url>
@@ -25,15 +25,15 @@ cd goodwin-web
 
 ---
 
-## 2. Environment Setup
+### 2. Environment Setup
 
-### Copy the Example Environment File
+#### Copy the Example Environment File
 
 ```bash
 cp .env.example .env
 ```
 
-### Generate the Application Key
+#### Generate the Application Key
 
 ```bash
 ./vendor/bin/sail artisan key:generate
@@ -43,15 +43,15 @@ cp .env.example .env
 
 ---
 
-## 3. Install Dependencies
+### 3. Install Dependencies
 
-### Install Composer Dependencies
+#### Install Composer Dependencies
 
 ```bash
 composer install
 ```
 
-### Install NPM Dependencies
+#### Install NPM Dependencies
 
 ```bash
 npm install
@@ -59,15 +59,15 @@ npm install
 
 ---
 
-## 4. Start Laravel Sail (MySQL & Adminer)
+### 4. Start Laravel Sail (MySQL & Adminer)
 
-### Linux / Mac
+#### Linux / Mac
 
 ```bash
 ./vendor/bin/sail up -d
 ```
 
-### Windows (WSL2)
+#### Windows (WSL2)
 
 ```bash
 vendor\bin\sail up -d
@@ -75,9 +75,9 @@ vendor\bin\sail up -d
 
 ---
 
-## 5. Database Setup
+### 5. Database Setup
 
-### Run Migrations & Seeders
+#### Run Migrations & Seeders
 
 ```bash
 ./vendor/bin/sail artisan migrate --seed
@@ -85,7 +85,7 @@ vendor\bin\sail up -d
 
 ---
 
-## 6. Frontend (Vite) Dev Server
+### 6. Frontend (Vite) Dev Server
 
 In a new terminal (with Sail running):
 
@@ -101,14 +101,14 @@ Or, for production build:
 
 ---
 
-## 7. Access the App
+### 7. Access the App
 
 -   **Web App:** [http://localhost](http://localhost)
 -   **Adminer (DB Management):** [http://localhost:8080](http://localhost:8080)
 
 ---
 
-## 8. Login Credentials
+### 8. Login Credentials
 
 -   **Test User:**  
     Email: `valves@goodwingroup.com`  
@@ -126,7 +126,7 @@ Or, for production build:
 
 ---
 
-## 9. Running Tests
+### 9. Running Tests
 
 ```bash
 ./vendor/bin/sail test
@@ -134,7 +134,7 @@ Or, for production build:
 
 ---
 
-## 10. Troubleshooting & Tips
+### 10. Troubleshooting & Tips
 
 -   If you get a "command not found" error for `sail`, use `bash vendor/bin/sail ...` or `vendor\bin\sail ...` on Windows.
 -   If ports 80 or 8080 are in use, change them in `docker-compose.yml` and `.env`.
@@ -147,7 +147,7 @@ Or, for production build:
 
 ---
 
-## 11. .env File Example
+### 11. .env File Example
 
 Make sure your `.env` contains (or matches) the following for Sail:
 
@@ -170,7 +170,7 @@ VITE_PORT=5173
 
 ---
 
-## 12. Additional Notes
+### 12. Additional Notes
 
 -   **Node.js** is not required on your host if you use Sail for npm scripts.
 -   **Adminer** is included for easy database management.
@@ -178,7 +178,7 @@ VITE_PORT=5173
 
 ---
 
-## 13. Support
+### 13. Support
 
 If you encounter issues, check:
 
